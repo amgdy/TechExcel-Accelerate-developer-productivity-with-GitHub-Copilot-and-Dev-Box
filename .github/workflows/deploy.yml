@@ -16,7 +16,7 @@ jobs:
       # Checkout code
       - uses: actions/checkout@main
 
-        # Log into Azure
+      # Log into Azure
       - uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -24,7 +24,12 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-        # Deploy ARM template
+      - name: "Run az commands"
+        run: |
+          az account show
+          az group list
+
+      # Deploy ARM template
       - name: Run ARM deploy
         uses: azure/arm-deploy@v2
         with:
