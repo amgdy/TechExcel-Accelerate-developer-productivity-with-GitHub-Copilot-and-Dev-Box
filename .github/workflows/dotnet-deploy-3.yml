@@ -3,7 +3,7 @@ name: .NET CI
 env:
   REGISTRY_NAME: buweftwhs46jympnpreg.azurecr.io
   IMAGE_NAME: techexcel/dotnetcoreapp
-  DOCKERFILE_PATH: ./src/Application/src/RazorPagesTestSample
+  DOCKERFILE_PATH: ./src/Application/src/RazorPagesTestSample/Dockerfile
   IMAGE_TAG: ${{ github.run_number }}
 
 on:
@@ -54,8 +54,6 @@ jobs:
     needs: build
     outputs:
       image: ${{ steps.docker-meta.outputs.tags }}
-    env:
-      IMAGE_DEFAULT_TAG: ${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v3
@@ -87,9 +85,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
-
-      - name: Set Default Image Tag
-        run: echo "IMAGE_DEFAULT_TAG=${{ fromJSON(steps.docker-meta.outputs.json).tags[0] }}" >> $GITHUB_ENV
 
   deploy-to-dev:
     runs-on: ubuntu-latest
