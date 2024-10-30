@@ -139,5 +139,5 @@ jobs:
       - name: Get App Service URL
         id: get-app-service-url
         run: |
-          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot ${{ vars.APP_SERVICE_SLOT_NAME }} --query defaultHostName -o tsv)
+          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --query defaultHostName -o tsv)
           echo "app_service_url=https://${app_url}" >> $GITHUB_OUTPUT
