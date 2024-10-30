@@ -114,7 +114,7 @@ jobs:
 
   deploy-to-prod:
     runs-on: ubuntu-latest
-    needs: dockerBuildPush
+    needs: deploy-to-dev
     environment:
       name: prod
 
