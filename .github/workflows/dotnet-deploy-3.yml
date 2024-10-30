@@ -1,10 +1,10 @@
 name: .NET CI
 
 env:
-  registryName: buweftwhs46jympnpreg.azurecr.io
-  repositoryName: techexcel/dotnetcoreapp
-  dockerFolderPath: ./src/Application/src/RazorPagesTestSample
-  tag: ${{github.run_number}}
+  REGISTRY_NAME: buweftwhs46jympnpreg.azurecr.io
+  IMAGE_NAME: techexcel/dotnetcoreapp
+  DOCKERFILE_PATH: ./src/Application/src/RazorPagesTestSample
+  IMAGE_TAG: ${{github.run_number}}
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
           az group list
 
       - name: Azure Container Registry Login
-        run: az acr login --name ${{ env.registryName }}
+        run: az acr login --name ${{ env.REGISTRY_NAME }}
 
       # - name: Docker Login
       #   # You may pin to the exact commit or the version.
@@ -79,16 +79,16 @@ jobs:
       #     logout: true
 
       # - name: Docker Build
-      #   run: docker build -t $registryName/$repositoryName:$tag --build-arg build_version=$tag $dockerFolderPath
+      #   run: docker build -t $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG --build-arg build_version=$IMAGE_TAG $DOCKERFILE_PATH
 
       # - name: Docker Push
-      #   run: docker push $registryName/$repositoryName:$tag
+      #   run: docker push $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Docker meta
         id: docker-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.registryName }}/${{ env.repositoryName }}
+          images: ${{ env.REGISTRY_NAME }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,priority=1000
             type=ref,event=branch,priority=900
@@ -97,7 +97,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v6
         with:
-          context: $dockerFolderPath
+          context: ${{ env.DOCKERFILE_PATH }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ steps.docker-meta.outputs.tags }}
