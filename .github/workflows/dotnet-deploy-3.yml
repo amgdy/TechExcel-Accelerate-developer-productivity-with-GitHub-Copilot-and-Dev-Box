@@ -94,7 +94,7 @@ jobs:
       image: ${{ needs.dockerBuildPush.outputs.image }}
     environment:
       name: dev
-
+      url: ${{ steps.get-app-service-url.outputs.app_service_url }}
     steps:
       - name: "Az CLI login"
         uses: azure/login@v2
@@ -109,6 +109,12 @@ jobs:
           app-name: ${{ vars.APP_SERVICE_NAME }}
           images: ${{ needs.dockerBuildPush.outputs.image }}
           slot-name: dev
+      - name: Get App Service URL
+        id: get-app-service-url
+        run: |
+          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot dev --query defaultHostName -o tsv)
+          echo "app_service_url=https://${app_url}" >> $GITHUB_ENV
+          echo "::set-output name=app_service_url::https://${app_url}"
 
   deploy-to-prod:
     name: Deploy to Production
@@ -116,7 +122,7 @@ jobs:
     needs: deploy-to-dev
     environment:
       name: prod
-
+      url: ${{ steps.get-app-service-url.outputs.app_service_url }}
     steps:
       - name: "Az CLI login"
         uses: azure/login@v2
@@ -131,3 +137,9 @@ jobs:
           app-name: ${{ vars.APP_SERVICE_NAME }}
           images: ${{  needs.deploy-to-dev.outputs.image }}
           slot-name: production
+      - name: Get App Service URL
+        id: get-app-service-url
+        run: |
+          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot dev --query defaultHostName -o tsv)
+          echo "app_service_url=https://${app_url}" >> $GITHUB_ENV
+          echo "::set-output name=app_service_url::https://${app_url}"
