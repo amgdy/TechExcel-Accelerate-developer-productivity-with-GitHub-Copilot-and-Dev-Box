@@ -112,9 +112,8 @@ jobs:
       - name: Get App Service URL
         id: get-app-service-url
         run: |
-          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot dev --query defaultHostName -o tsv)
-          echo "app_service_url=https://${app_url}" >> $GITHUB_ENV
-          echo "::set-output name=app_service_url::https://${app_url}"
+          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot ${{ env.APP_SERVICE_SLOT_NAME }} --query defaultHostName -o tsv)
+          echo "app_service_url=https://${app_url}" >> $GITHUB_OUTPUT
 
   deploy-to-prod:
     name: Deploy to Production
@@ -136,10 +135,9 @@ jobs:
         with:
           app-name: ${{ vars.APP_SERVICE_NAME }}
           images: ${{  needs.deploy-to-dev.outputs.image }}
-          slot-name: production
+          slot-name: ${{ env.APP_SERVICE_SLOT_NAME }}
       - name: Get App Service URL
         id: get-app-service-url
         run: |
-          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot dev --query defaultHostName -o tsv)
-          echo "app_service_url=https://${app_url}" >> $GITHUB_ENV
-          echo "::set-output name=app_service_url::https://${app_url}"
+          app_url=$(az webapp show --name ${{ vars.APP_SERVICE_NAME }} --resource-group ${{ secrets.AZURE_RG }} --slot ${{ env.APP_SERVICE_SLOT_NAME }} --query defaultHostName -o tsv)
+          echo "app_service_url=https://${app_url}" >> $GITHUB_OUTPUT
